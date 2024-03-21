@@ -5,88 +5,93 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
 
-
 public class MainPage {
     private final WebDriver driver;
+
+    // Локаторы
+
+    //Ссылка на Яндекс
+    private final By yandexLink = By.cssSelector(".Header_LogoYandex__3TSOI");
+    //Ссылка на главную Самоката
+    private final By scooterLogoLink = By.cssSelector(".Header_LogoScooter__3lsAR");
+    //Кнопка Заказать в шапке сайта
+    private final By orderButtonHeader = By.cssSelector(".Button_Button__ra12g");
+    //Кнопка Заказать в теле сайта
+    private final By orderButtonBody = By.xpath("//div[contains(@class, 'Home_FinishButton__1_cWm')]//button[contains(text(), 'Заказать')]");
+
+    //Аккордион(первая  вкладка)
+    private final String accordionItemHeadingBase = "accordion__heading-";
+    //Базовая часть ID для вкладки аккордиона
+    private final String accordionItemPanelBase = "accordion__panel-";
 
     public MainPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    // Метод для клика по заголовку аккордеона
+    //Метод раскрытия вкладки первого элемента аккордиона с прокруткой страницы
     public MainPage clickAccordionItemHeading(int itemIndex) {
-        WebElement heading = driver.findElement(By.id("accordion__heading-" + itemIndex));
-
+        WebElement heading = driver.findElement(By.id(accordionItemHeadingBase + itemIndex));
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", heading);
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleep(500); // Задержка
         heading.click();
         return this;
     }
 
-    // Метод для проверки, раскрыт ли аккордеон
+    //Метод проверки раскрытия вкладки аккордиона
     public boolean isAccordionItemExpanded(int itemIndex) {
-        By headingSelector = By.id("accordion__heading-" + itemIndex);
-        WebElement heading = driver.findElement(headingSelector);
+        WebElement heading = driver.findElement(By.id(accordionItemHeadingBase + itemIndex));
         return heading.getAttribute("aria-expanded").equals("true");
     }
 
-    // Метод для получения текста из панели аккордеона
+    //Метод получения текста аккордиона для проверки
     public String getAccordionItemPanelText(int itemIndex) {
-        By panelSelector = By.id("accordion__panel-" + itemIndex);
-        WebElement panel = driver.findElement(panelSelector);
+        WebElement panel = driver.findElement(By.id(accordionItemPanelBase + itemIndex));
         return panel.getText();
     }
 
-    // Метод для проверки текста внутри раскрытой панели аккордеона
+    //Метод проверки текста из аккордиона
     public boolean verifyAccordionItemPanelTextContains(int itemIndex, String expectedText) {
-        By panelSelector = By.id("accordion__panel-" + itemIndex);
-        WebElement panel = driver.findElement(panelSelector);
+        WebElement panel = driver.findElement(By.id(accordionItemPanelBase + itemIndex));
         return panel.getText().contains(expectedText);
     }
 
-    // Метод для клика по кнопке Яндекс
+    //Метод Клика по логотипу Яндекса
     public MainPage clickYandexLink() {
-        return click(By.cssSelector(".Header_LogoYandex__3TSOI"));
+        return click(yandexLink);
     }
 
-    // Метод для клика по кнопке Самоката
+    //Метод Клика по логотипу Самоката
     public MainPage clickScooterLogoLink() {
-        return click(By.cssSelector(".Header_LogoScooter__3lsAR"));
+        return click(scooterLogoLink);
     }
 
-    //Метод для клика по кнопке Заказать в шапке сайта
+    //Метод раскрытия первой вкладки аккордиона
     public MainPage clickOrderButtonHeader() {
-        return click(By.cssSelector(".Button_Button__ra12g"));
+        return click(orderButtonHeader);
     }
 
-    //Метод для клика по кнопке Заказать в теле сайта
-    public MainPage clickOrderButtonBody(){
-        WebElement button = driver.findElement(By.xpath("//div[contains(@class, 'Home_FinishButton__1_cWm')]//button[contains(text(), 'Заказать')]"));
-
+    //Метод раскрытия вкладки аккордиона с прокруткой до элемента
+    public MainPage clickOrderButtonBody() {
+        WebElement button = driver.findElement(orderButtonBody);
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button);
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        sleep(500); // Задержка
         button.click();
         return this;
     }
 
-
+    //Метод Клик
     private MainPage click(By selector) {
         WebElement link = driver.findElement(selector);
         link.click();
         return this;
     }
+
+    // Вспомогательный метод для задержки
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
-
-

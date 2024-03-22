@@ -1,3 +1,5 @@
+package pages;
+
 public class Utils {
 
     public static class FormData {

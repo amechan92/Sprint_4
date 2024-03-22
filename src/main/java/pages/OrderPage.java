@@ -1,13 +1,15 @@
 package pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.*;
+
 
 public class OrderPage {
 
     private final WebDriver driver;
+
+    public OrderPage(WebDriver driver) {
+        this.driver = driver;
+    }
     // Локаторы
 
     // Заголовок шаг 1 "Для кого самокат"
@@ -24,6 +26,9 @@ public class OrderPage {
 
     // Выпадающий список Станция метро
     private final By selectMetroStation = By.cssSelector(".select-search__input");
+
+    // Локатор для опции "Красносельская" в выпадающем списке
+    private final By metroStationKrasnoselskaya = By.xpath("//div[text()='Красносельская']");
 
     // Поле ввода Телефон
     private final By inputPhone = By.cssSelector("input[placeholder='* Телефон: на него позвонит курьер']");
@@ -52,7 +57,7 @@ public class OrderPage {
     private final By inputComment = By.cssSelector("input[placeholder='Комментарий для курьера']");
 
     // Кнопка Заказать
-    private final By buttonOrder = By.cssSelector(".Button_Button__ra12g:not(.Button_Inverted__3IF-i)");
+    private final By buttonOrder = By.cssSelector(".Order_Buttons__1xGrp > button.Button_Button__ra12g:not(.Button_Inverted__3IF-i)");
 
 
 
@@ -60,30 +65,126 @@ public class OrderPage {
     private final By titleStepThree = By.cssSelector(".Order_ModalHeader__3FDaJ");
 
     //Кнопка Подтвердить
-    private final By buttonConfirm = By.xpath("//div[contains(@class, 'Order_Modal__YZ-d3')]//button[text()='Да']");
+    private final By buttonConfirm = By.cssSelector(".Order_Modal__YZ-d3 .Order_Buttons__1xGrp button:not(.Button_Inverted__3IF-i)");
 
 
 
-    // Заголовок Статусный экран  "Заказ оформлен"
-    private final By titleStatusScreen = By.cssSelector(".Order_ModalHeader__3FDaJ");
+
+    // Кнопка на Статусном экране  "Посмотреть статусс"
+    private final By buttonViewStatus = By.cssSelector(".Order_NextButton__1_rCA .Button_Button__ra12g");
 
 
 
-    //Методы
 
-    //Метод Клик
-    private MainPage click(By selector) {
-        WebElement link = driver.findElement(selector);
-        link.click();
+
+    // Методы
+
+    // Метод для поиска элемента на странице по его локатору (селектору), очищает поле, если в нем уже что-то есть, и вводит новое значение
+    public void fillInputField(By selector, String value) {
+        WebElement element = driver.findElement(selector);
+        element.clear();
+        element.sendKeys(value);
+    }
+
+    //Метод ввода данных на первом шаге оформления заказа
+    public void fillFormStep1(pages.Utils.FormData formData) {
+        fillInputField(inputName, formData.getName());
+        fillInputField(inputSurname, formData.getSurname());
+        fillInputField(inputAddress, formData.getAddress());
+        fillInputField(inputPhone, formData.getPhone());
+    }
+
+    //Метод ввода данных на втором шаге оформления заказа
+    public void fillFormStep2(pages.Utils.FormData formData) {
+        WebElement dateInput = driver.findElement(inputDate);
+        dateInput.clear();
+        dateInput.sendKeys(formData.getDeliveryDate());
+
+        dateInput.sendKeys(Keys.ESCAPE);
+
+        fillInputField(inputComment, formData.getCourierComment());
+    }
+
+
+    public OrderPage clickNextButton() {
+        driver.findElement(buttonNext).click();
         return this;
     }
 
-    // Вспомогательный метод для задержки
-    private void sleep(long millis) {
+    // Метод проверки заголовка на шаге 1 оформления заказа
+    public boolean istitleStepOne() {
         try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            return driver.findElement(titleStepOne).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
         }
+    }
+
+    // Метод проверки заголовка на шаге 3 оформления заказа
+    public boolean isTitleStepThree() {
+        try {
+            return driver.findElement(titleStepThree).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    // Метод проверки кнопки Посмотреть статус заказа на статусном экране
+    public boolean getButtonViewStatus() {
+        try {
+            return driver.findElement(buttonViewStatus).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+
+    // Метод открывает выпадающий список станций метро и выбирает станцию "Черкизовская".
+    public void selectMetroStationCherkizovskaya() {
+        // Открыть dropdown
+        driver.findElement(selectMetroStation).click();
+
+        // Клик по элементу списка "Черкизовская"
+        WebElement stationButton = driver.findElement(By.cssSelector("li.select-search__row[data-value='2'] > button"));
+        stationButton.click();
+
+    }
+
+    //Метод выбора продолжительности периода
+    public void selectRentalDuration() {
+        // Клик по дропдауну для открытия списка опций
+        WebElement dropdown = driver.findElement(dropdownDuration);
+        dropdown.click();
+
+        // Клик по опции "Сутки"
+        WebElement option = driver.findElement(By.xpath("//div[@class='Dropdown-option' and text()='сутки']"));
+        option.click();
+    }
+
+    //Метод активации чекбокса выбора цвета самоката - Черный
+    public void selectScooterColorBlack() {
+        WebElement checkBox = driver.findElement(checkBoxBlack);
+        if (!checkBox.isSelected()) {
+            checkBox.click();
+        }
+    }
+
+    //Метод активации чекбокса выбора цвета самоката - Серый
+    public void selectScooterColorGray() {
+        WebElement checkBox = driver.findElement(checkBoxGray);
+        if (!checkBox.isSelected()) {
+            checkBox.click();
+        }
+    }
+
+    //Метод клика по кнопке заказать
+    public void clickOrderButton() {
+        driver.findElement(buttonOrder).click();
+    }
+
+    //Метод клика по кнопке заказать
+    public void clickButtonConfirm() {
+        driver.findElement(buttonConfirm).click();
+    }
 
 }

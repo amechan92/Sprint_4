@@ -1,5 +1,6 @@
 package tests;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +20,7 @@ public class MainPageAdditionalTests {
     @Before
     public void setUp() {
         // Перед началом теста
-        /*WebDriverManager.chromedriver().setup();*/
-        System.setProperty("webdriver.chrome.driver", "C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2023.3.2/plugins/chromedriver-win64/chromedriver.exe");
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", /*"--headless",*/ "--disable-dev-shm-usage");
         driver = new ChromeDriver(options);

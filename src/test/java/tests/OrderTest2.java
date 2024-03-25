@@ -1,5 +1,6 @@
 package tests;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +21,7 @@ public class OrderTest2 {
 
     @Before
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "C:/Program Files/JetBrains/IntelliJ IDEA Community Edition 2023.3.2/plugins/chromedriver-win64/chromedriver.exe");
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
@@ -39,6 +40,9 @@ public class OrderTest2 {
 
         // Проверка наличия заголовка на странице
         Assert.assertTrue("Заголовок 'Для кого самокат' не найден на странице", orderPage.istitleStepOne());
+
+        //Клик по кнопке Принять все куки
+        orderPage.clickButtonCookieAccept();
 
         // Получение тестовых данных
         Utils.FormData formData = Utils.dataSet2();

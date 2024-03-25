@@ -73,6 +73,10 @@ public class OrderPage {
     // Кнопка на Статусном экране  "Посмотреть статусс"
     private final By buttonViewStatus = By.cssSelector(".Order_NextButton__1_rCA .Button_Button__ra12g");
 
+    //Кнопка "Принять все куки"
+    private final By buttonCookieAccept = By.cssSelector(".App_CookieButton__3cvqF");
+
+
 
 
 
@@ -186,5 +190,12 @@ public class OrderPage {
     public void clickButtonConfirm() {
         driver.findElement(buttonConfirm).click();
     }
+
+    //Метод клика по кнопке Принять все куки
+
+    public void clickButtonCookieAccept() {
+        driver.findElement(buttonCookieAccept).click();
+    }
+
 
 }
